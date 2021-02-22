@@ -1,0 +1,128 @@
+#include <sys/mman.h>
+#include <sys/stat.h> /* Pour les constantes « mode » */
+#include <fcntl.h> /* Pour les constantes O_* */ 
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+
+int main(){
+    int val24 ;
+    int ival24;
+    char * addr;
+
+    int choix = 0;
+    char *motChoisi;
+
+    int valInt;
+    short valShort;
+
+    val24 = shm_open("eXchange",O_CREAT | O_RDWR ,666); /*666 pour lire et écrire*/
+    if(val24 ==-1){
+        printf("shm failed");
+        return -1;
+    } 
+    /*On tronque a 1024 octets*/
+    ival24 = ftruncate(val24,0x400); /*0x400 = d1024*/
+    if ( ival24 == -1){
+        return -2;
+    }
+    //memset(ival24,0,0x400);
+
+    addr =(char*) mmap((void*) 0x00, 0x400, PROT_READ|PROT_WRITE, MAP_SHARED,val24, 0);   
+    printf("addr = %p\n",addr);
+    printf("addr[0] = %d\n",addr[0]);
+    printf("val24 = %d\n",val24);
+
+    for (int j =0 ; j< 1024 ; j ++){
+        printf("%d",addr[j]);
+        }
+    printf("\n");
+    
+
+    /*
+    //TEST POUR LE 1 (string) FONCTIONNE 
+    sprintf(addr+1, "toto");
+    printf("%s\n",addr+1);
+    addr[0] = 1;
+    */
+
+    /*
+    //TEST POUR LE 2 (int little endian) FONCTIONNE
+    int valInt = 0x1234; //  4D2
+    //printf("\n\ntaille d'un int = %ld\n\n",sizeof(int));
+    memcpy(addr + 1 , &valInt, 4);    //4 = taille d'un int
+    addr[0] = 2;
+
+    */
+
+    /*
+    //TEST POUR LE 4 (short little endian) FONCTIONNE
+    short valShort = 0x415;
+    memcpy(addr + 1 , &valShort, 2);
+    addr[0] = 4;
+    */
+
+
+    while(choix != 7){
+        printf("Veuillez choisir la manière dont vous voulez ecrire :\n");
+        printf("1 - Pour écrire en Zero String\n");
+        printf("2 - Pour écrire en Int Little Endian\n");
+        printf("3 - Pour écrire en Int Big Endian\n");
+        printf("4 - Pour écrire en Short Little Endian\n");
+        printf("5 - Pour écrire en Short Big Endian\n");
+        printf("6 - Pour écrire en Struct {short;int;}Little Endian\n");
+        printf("7 - Pour arrêter le Lecteur\n");
+
+        scanf("%d", &choix);
+        printf("Vous pouvez maintenant ecrire :\n");
+        scanf("%s", motChoisi);
+        switch (choix) {
+
+            case (1) :
+
+                memcpy(addr + 1 , motChoisi, strlen(motChoisi));
+                addr[0] = 1;
+                break;
+
+            case (2) :
+
+                int valInt = 0x1234; //  4D2
+                //printf("\n\ntaille d'un int = %ld\n\n",sizeof(int));
+                memcpy(addr + 1 , &valInt, 4);    //4 = taille d'un int
+                addr[0] = 2;
+
+                break;
+
+            case (3) :
+                break;
+
+            case (4) :
+                break;
+
+            case (5) :
+                break;
+
+            case (6) :
+                break;
+
+            case (7) :
+                break;
+
+            default: 
+                break;
+
+
+
+
+            }
+        }
+    
+    printf("\n\ntaille d'un int = %ld\n\n",sizeof(int));
+
+
+    //shm_unlink("eXchange");
+        
+    return 0;
+    }
