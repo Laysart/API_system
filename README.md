@@ -1,5 +1,5 @@
 # Projet Api_system pour le 24 fevrier 00:00 
-#### Mathis Brionne, Tom Larnicol, Romain Sauvaget, Cécile Vidal 
+#### Mathis Brionne Cécile Vidal 
 
 ## TEST sur une raspberry
 ### Pour ce connecter :
